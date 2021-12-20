@@ -8,6 +8,7 @@ const playSound = (name) => {
   let audio = new Audio(`sounds/${name}.mp3`);
   audio.play();
 };
+
 const animatePress = (currentColor) => {
   $(`#${currentColor}`).addClass("pressed");
   setInterval(() => {
@@ -16,15 +17,18 @@ const animatePress = (currentColor) => {
 };
 
 const gameOver = () => {
+  playSound("wrong");
+  $("body").addClass("game-over");
+  $("#level-title").text("Game Over, Press Any Key to Restart");
+  setTimeout(() => {
+    $("body").removeClass("game-over");
+  }, 200);
+};
+
+const startOver = () => {
   level = 0;
   started = false;
   gamePattern = [];
-  userClickedPattern = [];
-  $("#level-title").text("Game Over, Press Any Key to Restart");
-  $("body").addClass("game-over");
-  setTimeout(() => {
-    $("body").removeClass("game-over");
-  }, 100);
 };
 
 const nextSequence = () => {
@@ -34,14 +38,14 @@ const nextSequence = () => {
   let randomNumber = Math.floor(Math.random() * 4);
   let randomChosenColor = buttonColors[randomNumber];
   gamePattern.push(randomChosenColor);
-  console.log(gamePattern);
-  $(`#${randomChosenColor}`).fadeOut(50).fadeIn();
+  $(`#${randomChosenColor}`).fadeIn(100).fadeOut(100).fadeIn(100);
   playSound(randomChosenColor);
 };
 
 const checkAnswer = (indexOfAnswer) => {
   if (gamePattern[indexOfAnswer] !== userClickedPattern[indexOfAnswer]) {
     gameOver();
+    startOver();
   } else {
     if (indexOfAnswer === level - 1) {
       setTimeout(() => {
@@ -51,6 +55,7 @@ const checkAnswer = (indexOfAnswer) => {
   }
 };
 
+//Start game
 $(document).keydown(() => {
   if (!started) {
     $("#level-title").text(`Level ${level}`); //level 0
@@ -60,19 +65,11 @@ $(document).keydown(() => {
 });
 
 $(".btn").click(function (event) {
-  // let userChosenColor = event.target.id;
   let userChosenColor = $(this).attr("id");
-  if (started) {
-    userClickedPattern.push(userChosenColor);
-    console.log(userClickedPattern);
-    let indexOfLastAnswer = userClickedPattern.length - 1;
-    playSound(userChosenColor);
-    animatePress(userChosenColor);
-    checkAnswer(indexOfLastAnswer);
-  } else {
-    $("body").addClass("game-over");
-    setTimeout(() => {
-      $("body").removeClass("game-over");
-    }, 100);
-  }
+  userClickedPattern.push(userChosenColor);
+  console.log(userClickedPattern);
+  let indexOfLastAnswer = userClickedPattern.length - 1;
+  playSound(userChosenColor);
+  animatePress(userChosenColor);
+  checkAnswer(indexOfLastAnswer);
 });
