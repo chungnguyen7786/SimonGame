@@ -28,6 +28,7 @@ const gameOver = () => {
 };
 
 const nextSequence = () => {
+  userClickedPattern = [];
   level++;
   $("#level-title").text(`Level ${level}`);
   let randomNumber = Math.floor(Math.random() * 4);
@@ -38,14 +39,13 @@ const nextSequence = () => {
   playSound(randomChosenColor);
 };
 
-const checkAnswer = (currentLevel, indexOfAnswer) => {
+const checkAnswer = (indexOfAnswer) => {
   if (gamePattern[indexOfAnswer] !== userClickedPattern[indexOfAnswer]) {
     gameOver();
   } else {
-    if (indexOfAnswer === currentLevel - 1) {
+    if (indexOfAnswer === level - 1) {
       setTimeout(() => {
         nextSequence();
-        userClickedPattern = [];
       }, 1000);
     }
   }
@@ -68,7 +68,7 @@ $(".btn").click(function (event) {
     let indexOfLastAnswer = userClickedPattern.length - 1;
     playSound(userChosenColor);
     animatePress(userChosenColor);
-    checkAnswer(level, indexOfLastAnswer);
+    checkAnswer(indexOfLastAnswer);
   } else {
     $("body").addClass("game-over");
     setTimeout(() => {
